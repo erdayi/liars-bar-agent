@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    container_name: liars-bar-db
+    environment:
+      POSTGRES_USER: liarsbar
+      POSTGRES_PASSWORD: liarsbar
+      POSTGRES_DB: liarsbar
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U liarsbar"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: liars-bar-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://liarsbar:liarsbar@db:5432/liarsbar
+      - SECONDME_CLIENT_ID=${SECONDME_CLIENT_ID}
+      - SECONDME_CLIENT_SECRET=${SECONDME_CLIENT_SECRET}
+      - SECONDME_REDIRECT_URI=${SECONDME_REDIRECT_URI:-http://localhost:5173/auth/callback}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev-secret-key}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: liars-bar-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev
+
+volumes:
+  postgres_data:
