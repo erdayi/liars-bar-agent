@@ -8,8 +8,8 @@ class Settings(BaseSettings):
         extra="ignore"
     )
 
-    # Database
-    database_url: str = "postgresql+asyncpg://liarsbar:liarsbar@localhost:5432/liarsbar"
+    # Database (use mysql+aiomysql:// for MySQL)
+    database_url: str = "mysql+aiomysql://root:password@localhost:3306/liarsbar"
 
     # SecondMe OAuth2
     secondme_client_id: str = ""

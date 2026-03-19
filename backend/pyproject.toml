@@ -10,13 +10,14 @@ python = "^3.9"
 fastapi = "^0.115.0"
 uvicorn = {extras = ["standard"], version = "^0.32.0"}
 sqlalchemy = "^2.0.35"
+# Use asyncpg for PostgreSQL or aiomysql for MySQL
 asyncpg = "^0.30.0"
+aiomysql = "^0.2.0"
 pydantic = "^2.10.0"
 pydantic-settings = "^2.6.0"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 httpx = "^0.28.0"
 python-multipart = "^0.0.20"
-psycopg2-binary = "^2.9.10"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.0"
